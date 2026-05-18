@@ -389,7 +389,7 @@ accel_df = pd.read_csv(ACCEL_CSV)
 # CONFIG
 # ============================================================
 
-TEMPLATE_PATH = "SBIM_template.pdf"
+TEMPLATE_PATH = "report_template.pdf"
 OUTPUT_DIR = "overlay_reports"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
