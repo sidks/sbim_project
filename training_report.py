@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore")
 
 import os
 import copy
+import glob
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -37,7 +38,13 @@ from sklearn.linear_model import LinearRegression
 from sklearn.inspection import permutation_importance
 
 
-df = pd.read_csv('cingo-pre-ml-data-3-8-2026.csv')
+df = pd.read_csv('/srv/repos/raddlab_datascience/cingo-pipeline/output/input-data-for-ai-models-2026-03-29-2026-04-24.csv')
+
+# DATA_PATH = "/srv/repos/raddlab_datascience/cingo-pipeline/output/"
+# latest_file = sorted(glob.glob(DATA_PATH + "input-data-for-ai-models-*.csv"))[-1]
+
+# df = pd.read_csv(latest_file)
+# print(f"Using dataset: {latest_file}")
 
 def fill_with_mode(s):
     if s.isna().all():
