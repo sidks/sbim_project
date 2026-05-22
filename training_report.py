@@ -83,7 +83,7 @@ print(f"\nRows before duplicate removal: {len(df)}")
 
 # Remove duplicates based on cingo_username and study_day
 df = df.drop_duplicates(
-    subset=["cingo_username", "study_day"],
+    subset=["cingo_username", "study_day", "time_submit_utc"],
     keep="first"
 )
 
