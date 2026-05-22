@@ -3,6 +3,7 @@ warnings.filterwarnings("ignore")
 
 import os
 import copy
+from pathlib import Path
 import glob
 import pandas as pd
 import numpy as np
@@ -38,20 +39,49 @@ from sklearn.linear_model import LinearRegression
 from sklearn.inspection import permutation_importance
 
 
-df = pd.read_csv('/srv/repos/raddlab_datascience/cingo-pipeline/output/input-data-for-ai-models-2026-03-29-2026-04-24.csv')
+# Directory containing the CSV files
+data_dir = Path("/srv/repos/raddlab_datascience/cingo-pipeline/output/")
 
-# DATA_PATH = "/srv/repos/raddlab_datascience/cingo-pipeline/output/"
-# latest_file = sorted(glob.glob(DATA_PATH + "input-data-for-ai-models-*.csv"))[-1]
+# Pattern to match files like:
+# input-data-for-ai-models-2026-03-27.csv
+pattern = re.compile(r"input-data-for-ai-models-(\d{4}-\d{2}-\d{2})\.csv")
 
-# df = pd.read_csv(latest_file)
-# print(f"Using dataset: {latest_file}")
+# Find all matching CSV files
+csv_files = []
+dates = []
+
+for file in data_dir.glob("input-data-for-ai-models-*.csv"):
+    match = pattern.match(file.name)
+    if match:
+        file_date = datetime.strptime(match.group(1), "%Y-%m-%d").date()
+        csv_files.append((file_date, file))
+        dates.append(file_date)
+
+# Ensure files exist
+if not csv_files:
+    raise ValueError("No matching CSV files found.")
+
+# Get earliest and latest available dates
+start_date = min(dates)
+end_date = max(dates)
+
+print(f"Earliest available date: {start_date}")
+print(f"Most recent available date: {end_date}")
+
+# Sort files by date
+csv_files = sorted(csv_files, key=lambda x: x[0])
+
+# Read and combine all CSVs
+df_list = [pd.read_csv(file_path) for _, file_path in csv_files]
+
+df = pd.concat(df_list, ignore_index=True)
+
 
 def fill_with_mode(s):
     if s.isna().all():
         return s  # leave as NaN if everything is missing
     mode_val = s.mode().iloc[0]  # take the first mode if multiple
     return s.fillna(mode_val)
-
 
 
 # Step 1: Fill with mean for each (beiwe_id, studyday)
