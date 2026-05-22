@@ -499,13 +499,20 @@ if existing_numbers:
 
     next_number = max(existing_numbers) + 1
 
-# Final output directory
+# Main report directory
 OUTPUT_DIR = os.path.join(
     BASE_OUTPUT_DIR,
     f"{base_report_name}-{next_number}"
 )
 
+# PNG subfolder only
+PNG_DIR = os.path.join(
+    OUTPUT_DIR,
+    "pngs"
+)
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(PNG_DIR, exist_ok=True)
 
 print(f"\nSaving reports to: {OUTPUT_DIR}\n")
 
