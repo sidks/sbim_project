@@ -6,6 +6,7 @@ import copy
 from pathlib import Path
 import re
 import glob
+import argparse
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -78,6 +79,18 @@ df_list = [pd.read_csv(file_path) for _, file_path in csv_files]
 
 df = pd.concat(df_list, ignore_index=True)
 
+print(f"\nRows before duplicate removal: {len(df)}")
+
+# Remove duplicates based on cingo_username and study_day
+df = df.drop_duplicates(
+    subset=["cingo_username", "study_day"],
+    keep="first"
+)
+
+print(f"Rows after duplicate removal: {len(df)}")
+print(f"Duplicates removed: {len(df_list) and (sum(len(d) for d in df_list) - len(df))}")
+
+print(f"\nFinal dataframe shape: {df.shape}")
 
 def fill_with_mode(s):
     if s.isna().all():
@@ -429,9 +442,74 @@ accel_df = pd.read_csv(ACCEL_CSV)
 # ============================================================
 
 TEMPLATE_PATH = "report_template.pdf"
-OUTPUT_DIR = "overlay_reports"
+# OUTPUT_DIR = "overlay_reports"
+
+# os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ============================================================
+# OUTPUT DIRECTORY SETUP
+# ============================================================
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    "--report_name",
+    type=str,
+    required=True,
+    help="Base report folder name, e.g. sbim-reports-05-18-2026"
+)
+
+args = parser.parse_args()
+
+BASE_OUTPUT_DIR = "output_reports"
+
+os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
+
+base_report_name = args.report_name
+
+# Find existing folders for this report date
+existing_dirs = glob.glob(
+    os.path.join(
+        BASE_OUTPUT_DIR,
+        f"{base_report_name}-*"
+    )
+)
+
+existing_numbers = []
+
+for d in existing_dirs:
+
+    folder_name = os.path.basename(d)
+
+    match = re.match(
+        rf"{re.escape(base_report_name)}-(\d+)$",
+        folder_name
+    )
+
+    if match:
+
+        existing_numbers.append(
+            int(match.group(1))
+        )
+
+# Determine next version number
+next_number = 1
+
+if existing_numbers:
+
+    next_number = max(existing_numbers) + 1
+
+# Final output directory
+OUTPUT_DIR = os.path.join(
+    BASE_OUTPUT_DIR,
+    f"{base_report_name}-{next_number}"
+)
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+print(f"\nSaving reports to: {OUTPUT_DIR}\n")
+
+
 
 TOP_K = 4
 FIG_W, FIG_H = 6, 4
@@ -1583,7 +1661,7 @@ def generate_overlay_reports():
 
         output_path = (
             f"{OUTPUT_DIR}/"
-            f"{pid}_final.pdf"
+            f"{pid}_report.pdf"
         )
 
         with open(output_path, "wb") as f:
