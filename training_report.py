@@ -468,41 +468,41 @@ os.makedirs(BASE_OUTPUT_DIR, exist_ok=True)
 base_report_name = args.report_name
 
 # Find existing folders for this report date
-existing_dirs = glob.glob(
-    os.path.join(
-        BASE_OUTPUT_DIR,
-        f"{base_report_name}-*"
-    )
-)
+# existing_dirs = glob.glob(
+#     os.path.join(
+#         BASE_OUTPUT_DIR,
+#         f"{base_report_name}-*"
+#     )
+# )
 
-existing_numbers = []
+# existing_numbers = []
 
-for d in existing_dirs:
+# for d in existing_dirs:
 
-    folder_name = os.path.basename(d)
+#     folder_name = os.path.basename(d)
 
-    match = re.match(
-        rf"{re.escape(base_report_name)}-(\d+)$",
-        folder_name
-    )
+#     match = re.match(
+#         rf"{re.escape(base_report_name)}-(\d+)$",
+#         folder_name
+#     )
 
-    if match:
+#     if match:
 
-        existing_numbers.append(
-            int(match.group(1))
-        )
+#         existing_numbers.append(
+#             int(match.group(1))
+#         )
 
-# Determine next version number
-next_number = 1
+# # Determine next version number
+# next_number = 1
 
-if existing_numbers:
+# if existing_numbers:
 
-    next_number = max(existing_numbers) + 1
+#     next_number = max(existing_numbers) + 1
 
 # Main report directory
 OUTPUT_DIR = os.path.join(
     BASE_OUTPUT_DIR,
-    f"{base_report_name}-{next_number}"
+    base_report_name
 )
 
 # PNG subfolder only
